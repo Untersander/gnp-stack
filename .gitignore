@@ -1,2 +1,4 @@
-clab-gnp-stack
-*.bak
+.gnp-stack.clab.yml.bak
+clab-gnp-stack/
+clickhouse/data
+clickhouse/logs
