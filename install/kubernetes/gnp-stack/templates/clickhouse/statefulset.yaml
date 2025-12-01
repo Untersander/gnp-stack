@@ -1,11 +1,15 @@
+{{ with .Values.clickhouse }}
+{{ if .enabled}}
+{{ with .statefulset }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: clickhouse
   labels:
     app: clickhouse
 spec:
   replicas: 1
+  serviceName: clickhouse
   selector:
     matchLabels:
       app: clickhouse
@@ -22,7 +26,8 @@ spec:
           env:
             - name: CLICKHOUSE_USER
               value: grafana
-          command: {{- .Values.clickhouse.command | toYaml | indent 2 }}
+          command:
+{{ .command | toYaml | indent 12 }}
           volumeMounts:
             - mountPath: /mnt/clickhouse-config/
               name: cfgmap
@@ -32,6 +37,18 @@ spec:
         - name: cfgmap
           configMap:
             name: clickhouse-config
-        - name: clickhouse-store
-          persistentVolumeClaim:
-            claimName: clickhouse-store
+  volumeClaimTemplates:
+    - metadata:
+        name: clickhouse-store
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .storageClassName -}}
+        storageClassName: {{ .storageClassName }}
+        {{ end }}
+        resources:
+          requests:
+            storage: 100Gi
+{{ end }}
+{{ end }}
+{{ end }}

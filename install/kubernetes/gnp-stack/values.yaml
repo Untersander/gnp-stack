@@ -1,6 +1,7 @@
 
 clickhouse:
-  deployment:
+  enabled: true
+  statefulset:
     command:
       - /bin/sh
       - -c
