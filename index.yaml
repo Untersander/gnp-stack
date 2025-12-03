@@ -2,6 +2,29 @@ apiVersion: v1
 entries:
   gnp-stack:
   - apiVersion: v2
+    appVersion: 0.0.4
+    created: "2025-12-03T14:22:29.965890393Z"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 10.1.4
+    - condition: nats.enabled
+      name: nats
+      repository: https://nats-io.github.io/k8s/helm/charts/
+      version: 2.12.1
+    - condition: kube-prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 77.14.0
+    description: A Helm chart for Kubernetes
+    digest: 403e1c554ee5e42427cd9b479959b6ead0a7fcb44f859af34aa10c4b1066f759
+    name: gnp-stack
+    type: application
+    urls:
+    - https://github.com/Untersander/gnp-stack/releases/download/gnp-stack-0.0.4/gnp-stack-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
     appVersion: 0.0.3
     created: "2025-12-01T21:43:28.394881771Z"
     dependencies:
@@ -93,4 +116,4 @@ entries:
     urls:
     - https://github.com/Untersander/gnp-stack/releases/download/gnp-stack-0.0.1/gnp-stack-0.0.1.tgz
     version: 0.0.1
-generated: "2025-12-03T13:03:29.492499858Z"
+generated: "2025-12-03T14:22:29.965909269Z"
