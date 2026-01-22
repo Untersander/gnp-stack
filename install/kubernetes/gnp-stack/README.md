@@ -2,14 +2,33 @@
 
 This directory contains Kubernetes manifests for deploying the GNP-Stack to a Kubernetes cluster via Helm.
 
+## Prerequisites
+Following prerequisites are required to install the GNP-Stack:
+- A running Kubernetes cluster (v1.28+)
+- Helm
+- Container Storage Interface (CSI) plugin for persistent storage (optional, if you have one set localPathProvisioner.enabled=false)
+- Prometheus Operator CRDs (optional, if you want to monitor your observability stack)
+
+Helm >= 3 is required to install the GNP-Stack on Kubernetes.
+You can install Helm by following the instructions in the [Helm documentation](https://helm.sh/docs/intro/install/)
+
+To install the Prometheus Operator CRDs:
+```bash
+helm upgrade -i prometheus-crds oci://ghcr.io/prometheus-community/charts/prometheus-operator-crds --version 23.0.0
+```
+
+## Install GNP-Stack
+Install gnp-stack:
+```bash
+helm upgrade --install gnp-stack oci://ghcr.io/untersander/gnp-stack/gnp-stack --namespace gnp-stack --create-namespace
+```
 
 ## Setup Demo Cluster
 
 Using [talosctl](https://docs.siderolabs.com/talos/v1.11/getting-started/talosctl), you can quickly set up a local Kubernetes cluster for testing and development purposes.
 ```bash
-talosctl cluster create --cidr 192.168.60.0/24 --name gnp-stack_gnp-mgmt --wait=false --config-patch '{"cluster":{"network":{"cni":{"name":"none"}},"proxy":{"disabled":true}}}' --cpus-workers 12.0 --memory-workers 12000
-talosctl kubeconfig -n 192.168.60.2 .
-kubectl config view --flatten --kubeconfig ./kubeconfig > ~/.kube/config
+talosctl cluster create --cidr 192.168.60.0/24 --name gnp-stack_gnp-mgmt --wait=false --config-patch '{"cluster":{"network":{"cni":{"name":"none"}},"proxy":{"disabled":true}}}' --cpus-workers 6.0 --memory-workers 8000
+talosctl kubeconfig kubeconfig -m -n 192.168.60.2
 ```
 
 Cilium installation:
@@ -17,7 +36,7 @@ Cilium installation:
 helm repo add cilium https://helm.cilium.io
 helm repo update
 helm upgrade --install cilium cilium/cilium \
- --version 1.18.3 \
+ --version 1.18.5 \
  --namespace kube-system \
  --values - <<'EOF'
 ipam:
@@ -35,55 +54,6 @@ k8sServiceHost: localhost
 k8sServicePort: 7445
 EOF
 ```
-
-## New helm install full stack
-Install CRDs:
-```bash
-helm upgrade -i prometheus-crds oci://ghcr.io/prometheus-community/charts/prometheus-operator-crds --version 23.0.0
-```
-Install gnp-stack:
-```bash
-helm upgrade --install gnp-stack ./gnp-stack --namespace gnp-stack --create-namespace
-```
-
-## Old install all components separately
-Setup namespace:
-```bash
-kubectl create namespace gnp-stack
-```
-Setup local-path-provisioner for dynamic PVCs:
-```bash
-kubectl apply -f local-path/local-path-provisioner.yaml
-```
-Prometheus CRDs and Operator:
-```bash
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-helm upgrade --install prometheus-operator prometheus-community/kube-prometheus-stack --namespace gnp-stack --version 77.14.0 -f prometheus/values.yaml
-kubectl apply -f prometheus/scrape-configs.yaml
-```
-
-Grafana:
-```bash
-helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
-helm upgrade --install grafana grafana/grafana --namespace gnp-stack --version 10.1.4 -f grafana/values.yaml
-kubectl apply -f grafana/dashboards/
-```
-
-Nats:
-```bash
-helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-helm repo update
-helm upgrade --install nats nats/nats --namespace gnp-stack --version 2.12.1 -f nats/values.yaml
-```
-
-GNMIC Ingestor and Emitter:
-```bash
-kubectl apply -f gnmic-ingestor
-kubectl apply -f gnmic-emitter
-```
-
 
 ## Cleanup demo cluster
 ```bash
