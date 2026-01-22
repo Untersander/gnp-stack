@@ -45,7 +45,7 @@ jobs:
           echo "REGISTRY=ghcr.io/${GITHUB_REPOSITORY@L}" >> "${GITHUB_ENV}"
 
       - name: Run oci-chart-releaser
-        uses: bitdeps/helm-oci-charts-releaser@v0.1.4
+        uses: bitdeps/helm-oci-charts-releaser@v0.1.5
         with:
           charts_dir: install/kubernetes
           oci_registry: ${{ env.REGISTRY }}
