@@ -24,7 +24,7 @@ spec:
             - /app/gnmic.yaml
             - --log
             - subscribe
-          image: ghcr.io/openconfig/gnmic:0.42.0
+          image: ghcr.io/openconfig/gnmic:0.45.0
           name: gnmic-ingestor
           ports:
             - containerPort: 7890

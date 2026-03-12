@@ -7,7 +7,7 @@ metadata:
   name: gnmic-emitter
   namespace: gnp-stack
 spec:
-  replicas: {{ .replcias }}
+  replicas: {{ .replicas }}
   selector:
     matchLabels:
       service: gnmic-emitter
@@ -24,7 +24,7 @@ spec:
             - /app/gnmic.yaml
             - --log
             - subscribe
-          image: ghcr.io/openconfig/gnmic:0.42.0
+          image: ghcr.io/openconfig/gnmic:0.45.0
           name: gnmic-emitter
           ports:
             - containerPort: 7890
